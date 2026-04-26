@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: tourism-recommendation
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:root}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:040420}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+tourism:
+  jwt:
+    secret: ${JWT_SECRET:tourism-jwt-secret-key-change-in-production-min-256-bits-required-here-please}
+    expiration-ms: 86400000
+  recommendation:
+    cache-ttl-seconds: 3600
+    cf-weight: 0.55
+    cb-weight: 0.45
+
+---
+# 无 MySQL 时可用内存 H2：mvn spring-boot:run -Dspring-boot.run.profiles=h2
+spring:
+  config:
+    activate:
+      on-profile: h2
+  datasource:
+    url: jdbc:h2:mem:tourism;DB_CLOSE_DELAY=-1;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
